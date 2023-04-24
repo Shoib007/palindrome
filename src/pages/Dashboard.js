@@ -1,17 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, CSSProperties } from 'react'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import RingLoader from 'react-spinners/RingLoader';
 
 export default function Dashboard() {
     const [palindrom, setPalindrome] = useState('');
     const [disableButton, setdisableButton] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const color = 'rgb(255,255,255)';
+
+    const override: CSSProperties = {
+        display: "block",
+        margin: "0 auto",
+    };
 
     const checkPalindrom = (e) => {
         let button = e.target.value;
         const palinderoString = new FormData();
         palinderoString.append("string", palindrom);
         setdisableButton(true);
+        setLoading(true);
         axios.post("http://localhost:8000/verify", palinderoString)
             .then((res) => {
                 console.log(res.data);
@@ -30,6 +39,7 @@ export default function Dashboard() {
                     axios.get('http://localhost:8000/palindrome')
                         .then((res) => {
                             setPalindrome(res.data.data[0]);
+                            setLoading(false);
                         })
                 }
                 else if (res.data === "False" && button === "yes") {
@@ -47,6 +57,7 @@ export default function Dashboard() {
                     axios.get('http://localhost:8000/palindrome')
                         .then((res) => {
                             setPalindrome(res.data.data[0]);
+                            setLoading(false);
                         })
                 }
 
@@ -65,6 +76,7 @@ export default function Dashboard() {
                     axios.get('http://localhost:8000/palindrome')
                         .then((res) => {
                             setPalindrome(res.data.data[0]);
+                            setLoading(false);
                         })
                 }
                 else {
@@ -72,7 +84,7 @@ export default function Dashboard() {
                     toast.warn('😢 Wrong Answer !!', {
                         position: "bottom-center",
                         autoClose: 500,
-                        hideProgressBar: false,
+                        hideProgressBar: true,
                         closeOnClick: true,
                         pauseOnHover: false,
                         draggable: true,
@@ -82,6 +94,7 @@ export default function Dashboard() {
                     axios.get('http://localhost:8000/palindrome')
                         .then((res) => {
                             setPalindrome(res.data.data[0]);
+                            setLoading(false);
                         })
                 }
                 setdisableButton(false);
@@ -98,14 +111,28 @@ export default function Dashboard() {
     }, [])
 
     return (
-        <>
-        <div className='d-flex position-absolute' style={{width:'100%',zIndex:'1'}}>
-                <div className='d-flex flex-column justify-content-center align-items-center rounded my-2 mx-2' style={{padding:'1rem', backgroundColor:'rgba(255, 255, 102,0.50)', background:'linear-gradient(117deg,rgba(121,107,9,1) 51%, rgba(0,1,255,1) 100%)'}}>
-                    <p style={{color:'white', margin:'0', padding:'0'}}>Player : <span style={{fontFamily:'arial',fontSize:"1.5rem"}}>Mohd Shoib</span></p>
-                    <p style={{margin:'0', padding:'0'}}>Player ID : <span style={{color:'red'}}>110938</span></p>
-                    <p style={{margin:'0', padding:'0'}}>Score : <span style={{color:'white'}}>342</span></p>
+        <div style={{ position: 'relative' }}>
+            <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 9999
+            }}>
+                <RingLoader
+                    color={color}
+                    loading={loading}
+                    size={150}
+                    cssOverride={override}
+                />
+            </div>
+            <div className='d-flex position-absolute' style={{ width: '100%' }}>
+                <div className='d-flex flex-column justify-content-center align-items-center rounded my-2 mx-2' style={{ padding: '1rem', backgroundColor: 'rgba(255, 255, 102,0.50)', background: 'linear-gradient(117deg,rgba(121,107,9,1) 51%, rgba(0,1,255,1) 100%)' }}>
+                    <p style={{ color: 'white', margin: '0', padding: '0' }}>Player : <span style={{ fontFamily: 'arial', fontSize: "1.5rem" }}>Mohd Shoib</span></p>
+                    <p style={{ margin: '0', padding: '0' }}>Player ID : <span style={{ color: 'red' }}>110938</span></p>
+                    <p style={{ margin: '0', padding: '0' }}>Score : <span style={{ color: 'white' }}>342</span></p>
                 </div>
-        </div>
+            </div>
             <div className='d-flex flex-column justify-content-center align-items-center' style={{ width: '100vw', height: '100vh' }}>
                 {/* Toast Area Starts */}
 
@@ -125,7 +152,7 @@ export default function Dashboard() {
 
                 {/* Toast Area Ends */}
 
-                <div style={{ width: '50%', height: '50%', textAlign: 'center' }}>
+                <div style={{ width: '80%', height: '50%', textAlign: 'center' }}>
                     <div className='row' style={{ width: '100%', height: '20%' }}>
                         <h1 className='text-light'>Palindrome Game</h1>
                     </div>
@@ -139,6 +166,6 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
